@@ -1,0 +1,24 @@
+{
+  "name": "quickpageserver",
+  "version": "1.0.0",
+  "description": "Backend API for the QuickPage Chrome Extension",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nmcmurdie/QuickpageServer.git"
+  },
+  "keywords": [],
+  "author": "Nick McMurdie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nmcmurdie/QuickpageServer/issues"
+  },
+  "homepage": "https://github.com/nmcmurdie/QuickpageServer#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
