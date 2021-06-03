@@ -45,7 +45,7 @@ app.get('/resize', (req, res) => {
                     res.send(data);
                 })
                 .catch(err => {
-                    res.status(404).send("Error: Invalid Image Format");
+                    res.status(400).send("Error: Invalid Image Format");
                 })
         })
         .catch(err => {
