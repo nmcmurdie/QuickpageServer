@@ -45,7 +45,7 @@ app.get('/resize', (req, res) => {
                     res.send(data);
                 })
                 .catch(err => {
-                    res.status(400).send("Error: Invalid Image Format");
+                    res.status(404).send("Error: Image Not Found");
                 })
         })
         .catch(err => {
@@ -62,10 +62,10 @@ function fetchSpotifyAuth(res, path) {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     })
-    .then(res => res.json())
-    .then(response => {
+    .then(async response => {
+        let json = await response.json();
         res.contentType('text/json');
-        res.send(response);
+        res.send(json);
     })
     .catch(err => {
         res.status(400).send("Error: Unable to Retrieve Authorization");
