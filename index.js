@@ -6,14 +6,16 @@ const sharp = require('sharp');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: 'chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao'
+}));
 
 app.get('/', (req, res) => {
     res.status(400).send("Error: Invalid Endpoint");
 });
 
 app.get('/basic', (req, res) => {
-    res.set('Cache-control', 'public, max-age=86400');
+    res.set('Cache-Control', 'public, max-age=86400');
     let url = req.query.url;
 
     if (url) fetch(url)
@@ -31,7 +33,7 @@ app.get('/basic', (req, res) => {
 });
 
 app.get('/resize', (req, res) => {
-    res.set('Cache-control', 'public, max-age=86400');
+    res.set('Cache-Control', 'public, max-age=86400');
     let { url, w } = req.query;
 
     if (url && w) fetch(url)
