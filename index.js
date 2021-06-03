@@ -13,6 +13,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/basic', (req, res) => {
+    res.set('Cache-control', 'public, max-age=86400');
     let url = req.query.url;
 
     if (url) fetch(url)
@@ -30,6 +31,7 @@ app.get('/basic', (req, res) => {
 });
 
 app.get('/resize', (req, res) => {
+    res.set('Cache-control', 'public, max-age=86400');
     let { url, w } = req.query;
 
     if (url && w) fetch(url)
@@ -64,7 +66,6 @@ function fetchSpotifyAuth(res, path) {
         res.send(response);
     })
     .catch(err => {
-        console.log(err);
         res.status(400).send("Error: Unable to Retrieve Authorization");
     });
 }
