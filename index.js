@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-    origin: 'chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao'
+    origin: ['chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao', 'chrome-extension://hcmdimfdocdkbfhpggncklfkfnaolhem']
 }));
 
 app.get('/', (req, res) => {
