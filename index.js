@@ -6,26 +6,23 @@ const sharp = require('sharp');
 require('dotenv').config();
 
 const app = express();
-app.use(cors({
-    origin: ['chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao', 'chrome-extension://hcmdimfdocdkbfhpggncklfkfnaolhem']
-}));
+// app.use(cors({
+//     origin: ['chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao', 'chrome-extension://hcmdimfdocdkbfhpggncklfkfnaolhem']
+// }));
 
 app.get('/', (req, res) => {
     res.status(400).send("Error: Invalid Endpoint");
 });
 
-app.get('/fetchContent', (req, res) => {
+app.get('/fetchContent', async (req, res) => {
     res.set('Cache-control', 'public, max-age=86400');
     let url = req.query.url;
 
-    if (url) fetch(url)
-        .then(async response => {
-            let content = await response.text();
-            return content;
-        })
-        .catch(() => {
-            res.status(404).send("Error: Unable to Fetch Page");
-        })
+    if (url) {
+        const response = await fetch(url);
+        const body = await response.text();
+        res.send(body);
+    }
     else {
         res.status(400).send("Error: Missing URL Parameter");
     }
