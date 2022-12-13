@@ -14,6 +14,23 @@ app.get('/', (req, res) => {
     res.status(400).send("Error: Invalid Endpoint");
 });
 
+app.get('/fetchContent', (req, res) => {
+    res.set('Cache-control', 'public, max-age=86400');
+    let url = req.query.url;
+
+    if (url) fetch(url)
+        .then(async response => {
+            let content = await response.text();
+            return content;
+        })
+        .catch(() => {
+            res.status(404).send("Error: Unable to Fetch Page");
+        })
+    else {
+        res.status(400).send("Error: Missing URL Parameter");
+    }
+});
+
 app.get('/basic', (req, res) => {
     res.set('Cache-Control', 'public, max-age=86400');
     let url = req.query.url;
@@ -24,7 +41,7 @@ app.get('/basic', (req, res) => {
             let body = `data:${response.headers.get('content-type')};base64,${content.toString('base64')}`;
             res.send(body);
         })
-        .catch(err => {
+        .catch(() => {
             res.status(404).send("Error: Unable to Fetch Image");
         });
     else {
