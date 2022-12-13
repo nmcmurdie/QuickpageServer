@@ -6,9 +6,9 @@ const sharp = require('sharp');
 require('dotenv').config();
 
 const app = express();
-// app.use(cors({
-//     origin: ['chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao', 'chrome-extension://hcmdimfdocdkbfhpggncklfkfnaolhem']
-// }));
+app.use(cors({
+    origin: ['chrome-extension://mbhlblpfcjcoheaejihfdnlkhpfdmoao', 'chrome-extension://hcmdimfdocdkbfhpggncklfkfnaolhem']
+}));
 
 app.get('/', (req, res) => {
     res.status(400).send("Error: Invalid Endpoint");
