@@ -104,8 +104,8 @@ app.get('/thumbnail', async (req, res) => {
                 }
             };
 
-            $('source').each((_idx, el) => processImg(el, 'data-srcset', 'sizes'));
-            $('img').each((_idx, el) => processImg(el, 'src', 'width'));
+            if (!maxImage) $('source').each((_idx, el) => processImg(el, 'data-srcset', 'sizes'));
+            if (!maxImage) $('img').each((_idx, el) => processImg(el, 'src', 'width'));
 
             if (!maxImage) {
                 res.status(404).send("Error: Unable to find thumbnail image");
