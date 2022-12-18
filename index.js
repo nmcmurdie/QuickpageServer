@@ -8,7 +8,6 @@ const cheerio = require("cheerio");
 require('dotenv').config();
 
 const imgTypes = ["jpg", "png", "jpeg", "webp"];
-const IMAGE_SIZE_THRESHOLD = 800;
 
 const app = express();
 app.use(cors({
@@ -42,11 +41,13 @@ const resizeImage = (res, url, w) => {
                     res.send(data);
                 })
                 .catch(err => {
-                    res.status(404).send("Error: Image Not Found");
+                    console.log(err);
+                    res.status(404).send("Error: image not found");
                 })
         })
         .catch(err => {
-            res.status(404).send("Error: Unable to Fetch Image");
+            console.log(err);
+            res.status(404).send("Error: Unable to fetch image");
         });
 }
 
@@ -60,36 +61,66 @@ app.get('/thumbnail', async (req, res) => {
                 headers: { "Accept-Encoding": "gzip,deflate,compress" } 
             });
             const $ = cheerio.load(data);
-            const sources = $('source');
-            const images = $('img');
 
-            // Find largest image
+            // Find thumbnail
             let maxImage;
-            let maxImageSize = -2;
 
-            let processImg = (el, src_attr, size_attr) => {
+            $('link[rel="preload"]').each((_idx, el) => {
+                const source = $(el);
+                const src = source.attr('href');
+                const sizes = source.attr('media');
+                if (!sizes) return;
+
+                const minIndex = sizes.indexOf("min-width:"),
+                    maxIndex = sizes.indexOf("max-width:");
+                let sizeInt = -1;
+                
+                if (maxIndex !== -1 || minIndex !== -1) {
+                    const index = Math.max(maxIndex, minIndex);
+                    let size = parseInt(sizes.substring(index + 10));
+                    sizeInt = size ?? sizeInt;
+                }
+                
+                const imageURL = getImageURL(src);
+                if (sizeInt >= w && imageURL) {
+                    maxImage = imageURL;
+                    return false;
+                }
+            });
+
+            const processImg = (el, src_attr, size_attr) => {
                 const source = $(el);
                 const src = source.attr(src_attr);
                 const size = source.attr(size_attr);
                 const sizeInt = size ? parseInt(size) : -1;
                 
                 const imageURL = getImageURL(src);
-                if (sizeInt > maxImageSize && imageURL) maxImage = imageURL;
-                if (maxImageSize >= IMAGE_SIZE_THRESHOLD) return false;
+                if (sizeInt >= w && imageURL) {
+                    maxImage = imageURL;
+                    return false;
+                }
+                else if (!maxImage && imageURL) {
+                    maxImage = imageURL;
+                }
             };
 
-            sources.each((_idx, el) => processImg(el, 'data-srcset', 'sizes'));
-            images.each((_idx, el) => processImg(el, 'src', 'width'));
+            $('source').each((_idx, el) => processImg(el, 'data-srcset', 'sizes'));
+            $('img').each((_idx, el) => processImg(el, 'src', 'width'));
+
+            if (!maxImage) {
+                res.status(404).send("Error: Unable to find thumbnail image");
+                return;
+            }
 
             resizeImage(res, maxImage, w);
         } catch(err) {
             console.log(err);
-            res.status(404).send("Error: Unable to Fetch Images from Page");
+            res.status(404).send("Error: Unable to fetch images from page");
         }
         
     }
     else {
-        res.status(400).send("Error: Missing URL or Width Parameter");
+        res.status(400).send("Error: Missing URL or width parameter");
     }
 });
 
