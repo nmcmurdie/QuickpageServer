@@ -64,6 +64,7 @@ app.get('/thumbnail', async (req, res) => {
 
             // Find thumbnail
             let maxImage;
+            let maxImageSize = -2;
 
             $('link[rel="preload"]').each((_idx, el) => {
                 const source = $(el);
@@ -84,6 +85,7 @@ app.get('/thumbnail', async (req, res) => {
                 const imageURL = getImageURL(src);
                 if (sizeInt >= w && imageURL) {
                     maxImage = imageURL;
+                    maxImageSize = sizeInt;
                     return false;
                 }
             });
@@ -94,13 +96,24 @@ app.get('/thumbnail', async (req, res) => {
                 const size = source.attr(size_attr);
                 const sizeInt = size ? parseInt(size) : -1;
                 
-                const imageURL = getImageURL(src);
+                let imageURL = getImageURL(src);
+                if (sizeInt >= maxImageSize && !imageURL) {
+                    el.attributes.forEach((attr) => {
+                        const val = attr['value'];
+                        if (val && getImageURL(val)) {
+                            imageURL = val;
+                            return false;
+                        }
+                    })
+                }
                 if (sizeInt >= w && imageURL) {
                     maxImage = imageURL;
+                    maxImageSize = sizeInt;
                     return false;
                 }
-                else if (!maxImage && imageURL) {
+                else if (imageURL && sizeInt > maxImageSize) {
                     maxImage = imageURL;
+                    maxImageSize = sizeInt;
                 }
             };
 
