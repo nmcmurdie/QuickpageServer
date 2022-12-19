@@ -24,7 +24,7 @@ const getImageURL = (str) => {
     try {
         const url = new URL(str);
         const filetype = url.pathname.split('.').pop().trim();
-        if (imgTypes.includes(filetype)) return `${url.protocol}//${url.host}${url.pathname}`;
+        if (imgTypes.includes(filetype)) return str;
     }
     catch (exception) {
         return undefined;
